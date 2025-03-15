@@ -70,12 +70,12 @@ if analysis == "Pola Harian":
     ax.set_ylabel("Rata-rata Jumlah Penyewaan")
     st.pyplot(fig)
 
-    # Insight
+    # Insight untuk Pola Harian
     st.write("""
-    **Insight:**  
-    - Grafik menunjukkan bahwa penyewaan sepeda meningkat secara signifikan pada jam-jam sibuk (pagi sekitar jam 7-9 dan sore sekitar jam 17-19).  
-    - Hal ini kemungkinan besar terkait dengan aktivitas komuter seperti pergi ke kantor atau sekolah.  
-    - Pada malam hari (setelah jam 21), jumlah penyewaan menurun drastis karena aktivitas masyarakat berkurang.
+    - **Grafik ini menunjukkan pola penyewaan sepeda setiap jam dalam sehari.**
+    - Terlihat bahwa penyewaan meningkat pada pagi hari (sekitar jam 7–9) dan sore hari (sekitar jam 17–19). Ini biasanya terjadi karena banyak orang menggunakan sepeda untuk pergi ke kantor atau sekolah.
+    - Pada malam hari (setelah jam 21), jumlah penyewaan menurun drastis karena aktivitas masyarakat umumnya berkurang.
+    - Anda bisa memanfaatkan informasi ini untuk memastikan jumlah sepeda tersedia cukup di jam-jam sibuk!
     """)
 
 elif analysis == "Pengaruh Cuaca":
@@ -89,12 +89,13 @@ elif analysis == "Pengaruh Cuaca":
     ax.set_title("Heatmap Korelasi")
     st.pyplot(fig)
 
-    # Insight
+    # Insight untuk Korelasi Cuaca
     st.write("""
-    **Insight:**  
-    - Suhu (`temp`) memiliki korelasi positif yang cukup kuat dengan jumlah penyewaan sepeda (`cnt`), yang menunjukkan bahwa semakin hangat cuaca, semakin banyak orang yang menyewa sepeda.  
-    - Kelembapan (`hum`) memiliki korelasi negatif lemah dengan penyewaan, artinya kelembapan tinggi sedikit mengurangi minat penyewaan sepeda.  
-    - Kecepatan angin (`windspeed`) memiliki korelasi positif moderat, yang menunjukkan bahwa angin sepoi-sepoi mungkin membuat berkendara lebih nyaman.
+    - **Heatmap ini menunjukkan hubungan antara cuaca dan jumlah penyewaan sepeda.**
+    - Suhu hangat membuat lebih banyak orang tertarik menyewa sepeda. Semakin tinggi suhu, semakin tinggi pula jumlah penyewaan.
+    - Kelembapan tinggi sedikit mengurangi minat penyewaan, mungkin karena cuaca lembap kurang nyaman untuk bersepeda.
+    - Angin sepoi-sepoi justru membuat berkendara lebih nyaman, sehingga jumlah penyewaan cenderung meningkat saat angin tidak terlalu kencang.
+    - Informasi ini bisa membantu Anda memprediksi lonjakan penyewaan berdasarkan kondisi cuaca!
     """)
 
 elif analysis == "RFM":
@@ -116,11 +117,11 @@ elif analysis == "RFM":
     # Tampilkan dataframe RFM
     st.dataframe(rfm)
 
-    # Insight
+    # Insight untuk RFM
     st.write("""
-    **Insight:**  
-    - **Recency** menunjukkan seberapa baru suatu hari dalam dataset. Hari-hari dengan recency rendah adalah hari-hari terbaru dalam dataset.  
-    - **Frequency** menunjukkan total jumlah penyewaan per hari. Hari-hari dengan frekuensi tinggi adalah hari-hari dengan permintaan tertinggi.  
-    - **Monetary** mencerminkan pendapatan atau nilai ekonomi dari penyewaan pada hari tersebut.  
-    - Segmentasi RFM dapat digunakan untuk mengidentifikasi hari-hari penting yang memberikan dampak besar pada bisnis, seperti hari libur atau akhir pekan.
+    - **Tabel ini membantu kita memahami performa hari-hari tertentu berdasarkan tiga faktor: Recency, Frequency, dan Monetary.**
+    - **Recency:** Menunjukkan seberapa baru hari tersebut dalam dataset. Hari-hari dengan nilai rendah adalah hari-hari terbaru.
+    - **Frequency:** Menunjukkan berapa kali sepeda disewa dalam satu hari. Hari-hari dengan frekuensi tinggi biasanya merupakan hari-hari sibuk seperti akhir pekan atau hari libur.
+    - **Monetary:** Mencerminkan total pendapatan dari penyewaan sepeda pada hari tersebut. Hari-hari dengan nilai tinggi memberikan kontribusi besar bagi bisnis.
+    - Anda bisa menggunakan analisis ini untuk fokus pada hari-hari penting yang memberikan dampak besar pada bisnis, seperti akhir pekan atau musim liburan!
     """)
