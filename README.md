@@ -1,6 +1,6 @@
 # Dicoding Submission: Belajar Analisis Data dengan Python
 ## <p align="center">Analisis Data Penyewaan Sepeda 🚲📊</div>   
-**Proyek ini merupakan bagian submission "Proyek Analisa Data" pada kelas "Belajar Analisis Data dengan Python" Dicoding Academy. Dashboard ini dibuat untuk memungkinkan pengguna menganalisis pola penyewaan sepeda berdasarkan data harian dan per jam.**
+**Proyek ini merupakan bagian submission "Proyek Analisa Data" pada kelas "Belajar Analisis Data dengan Python" Dicoding Academy. Dashboard ini dibuat untuk memungkinkan pengguna menganalisis pola penyewaan sepeda berdasarkan rentan waktu, suhu, dan cuaca.**
 
 ## Setup Environment - Anaconda
 ```
