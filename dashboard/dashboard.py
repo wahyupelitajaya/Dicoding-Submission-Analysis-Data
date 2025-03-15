@@ -217,3 +217,7 @@ elif analysis == "RFM":
     st.write("""
     - **Tabel ini membantu kita memahami performa hari-hari tertentu berdasarkan tiga faktor: Recency, Frequency, dan Monetary.**
     - **Recency:** Menunjukkan seberapa baru hari tersebut dalam dataset. Hari-hari dengan nilai rendah adalah hari-hari terbaru.
+    - **Frequency:** Menunjukkan berapa kali sepeda disewa dalam satu hari. Hari-hari dengan frekuensi tinggi biasanya merupakan hari-hari sibuk seperti akhir pekan atau hari libur.
+    - **Monetary:** Mencerminkan total pendapatan dari penyewaan sepeda pada hari tersebut. Hari-hari dengan nilai tinggi memberikan kontribusi besar bagi bisnis.
+    - Anda bisa menggunakan analisis ini untuk fokus pada hari-hari penting yang memberikan dampak besar pada bisnis, seperti akhir pekan atau musim liburan!
+    """)
