@@ -58,6 +58,24 @@ start_date, end_date = st.sidebar.date_input(
 # Filter dataset berdasarkan rentang tanggal
 filtered_df = filtered_df[(filtered_df['dteday'].dt.date >= start_date) & (filtered_df['dteday'].dt.date <= end_date)]
 
+# Cek apakah ada data yang tersedia setelah filter
+if filtered_df.empty:
+    st.warning("""
+        **Tidak ada data yang tersedia untuk rentang tanggal ini.**
+        - Mungkin rentang tanggal yang dipilih tidak sesuai dengan musim yang dipilih.
+        - Pastikan rentang tanggal dan musim sesuai dengan data historis.
+    """)
+else:
+    # Tampilkan keterangan tentang suhu rata-rata pada rentang tanggal yang dipilih
+    avg_temp = filtered_df['temp'].mean()
+    avg_atemp = filtered_df['atemp'].mean()
+    st.info(f"""
+        **Informasi Tambahan:**
+        - Suhu rata-rata pada rentang tanggal ini: **{avg_temp:.2f}** (normalisasi).
+        - Sensasi suhu rata-rata: **{avg_atemp:.2f}** (normalisasi).
+        - Pastikan kondisi cuaca dan suhu ini sesuai dengan ekspektasi Anda.
+    """)
+
 # Filter berdasarkan hari kerja
 workingday_options = {0: "Hari Libur", 1: "Hari Kerja"}
 selected_workingday = st.sidebar.selectbox("Pilih Hari Kerja:", list(workingday_options.values()))
