@@ -128,10 +128,12 @@ else:
         - Pastikan kondisi cuaca dan suhu ini sesuai dengan ekspektasi Anda.
     """)
 
-# Filter berdasarkan hari kerja
+# Filter berdasarkan hari kerja atau hari libur
 workingday_options = {0: "Hari Libur", 1: "Hari Kerja"}
 selected_workingday = st.sidebar.selectbox("Pilih Hari Kerja:", list(workingday_options.values()))
 workingday_key = [k for k, v in workingday_options.items() if v == selected_workingday][0]
+
+# Sesuaikan filter untuk hari libur atau hari kerja
 filtered_df = filtered_df[filtered_df['workingday'] == workingday_key]
 
 # Slider untuk rentang suhu
