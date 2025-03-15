@@ -38,25 +38,77 @@ Gunakan fitur interaktif di sidebar untuk menyesuaikan visualisasi sesuai kebutu
 # Sidebar untuk interaktivitas
 st.sidebar.header("Filter Data")
 
-# Filter berdasarkan musim
-seasons = {1: "Musim Semi", 2: "Musim Panas", 3: "Musim Gugur", 4: "Musim Dingin"}
-selected_season = st.sidebar.selectbox("Pilih Musim:", list(seasons.values()))
-season_key = [k for k, v in seasons.items() if v == selected_season][0]
-filtered_df = df_day[df_day['season'] == season_key]
+# Fungsi untuk mendapatkan rentang tanggal berdasarkan musim
+def get_date_range_for_season(season_key):
+    season_filtered_df = df_day[df_day['season'] == season_key]
+    if season_filtered_df.empty:
+        return None, None
+    min_date = season_filtered_df['dteday'].min().date()
+    max_date = season_filtered_df['dteday'].max().date()
+    return min_date, max_date
 
-# Filter berdasarkan rentang tanggal menggunakan kalender
-st.sidebar.subheader("Pilih Rentang Tanggal:")
-min_date = df_day['dteday'].min().date()  # Tanggal awal dataset
-max_date = df_day['dteday'].max().date()  # Tanggal akhir dataset
-start_date, end_date = st.sidebar.date_input(
-    "Pilih rentang tanggal:",
-    value=(min_date, max_date),
-    min_value=min_date,
-    max_value=max_date
+# Fungsi untuk mendapatkan musim berdasarkan tanggal
+def get_season_for_date(date):
+    season_mapping = {
+        1: "Musim Semi",
+        2: "Musim Panas",
+        3: "Musim Gugur",
+        4: "Musim Dingin"
+    }
+    season_key = df_day[df_day['dteday'].dt.date == date]['season'].values[0]
+    return season_mapping.get(season_key, "Tidak Diketahui")
+
+# Filter berdasarkan musim atau tanggal
+seasons = {1: "Musim Semi", 2: "Musim Panas", 3: "Musim Gugur", 4: "Musim Dingin"}
+
+# State untuk menyimpan pilihan terakhir
+if 'selected_season' not in st.session_state:
+    st.session_state.selected_season = "Musim Semi"
+if 'start_date' not in st.session_state:
+    st.session_state.start_date = df_day['dteday'].min().date()
+if 'end_date' not in st.session_state:
+    st.session_state.end_date = df_day['dteday'].max().date()
+
+# Pilihan musim
+selected_season = st.sidebar.selectbox(
+    "Pilih Musim:",
+    list(seasons.values()),
+    index=list(seasons.values()).index(st.session_state.selected_season)
 )
 
-# Filter dataset berdasarkan rentang tanggal
-filtered_df = filtered_df[(filtered_df['dteday'].dt.date >= start_date) & (filtered_df['dteday'].dt.date <= end_date)]
+# Update state musim
+st.session_state.selected_season = selected_season
+season_key = [k for k, v in seasons.items() if v == selected_season][0]
+
+# Dapatkan rentang tanggal berdasarkan musim yang dipilih
+min_date, max_date = get_date_range_for_season(season_key)
+
+# Jika rentang tanggal valid, atur tanggal awal dan akhir
+if min_date and max_date:
+    start_date, end_date = st.sidebar.date_input(
+        "Pilih Rentang Tanggal:",
+        value=(min_date, max_date),
+        min_value=min_date,
+        max_value=max_date
+    )
+    st.session_state.start_date = start_date
+    st.session_state.end_date = end_date
+
+# Jika tanggal dipilih, atur musim berdasarkan tanggal pertama
+if 'start_date' in st.session_state:
+    selected_date = st.session_state.start_date
+    detected_season = get_season_for_date(selected_date)
+    if detected_season != st.session_state.selected_season:
+        st.session_state.selected_season = detected_season
+        selected_season = detected_season
+        season_key = [k for k, v in seasons.items() if v == selected_season][0]
+
+# Filter dataset berdasarkan musim dan rentang tanggal
+filtered_df = df_day[
+    (df_day['season'] == season_key) &
+    (df_day['dteday'].dt.date >= st.session_state.start_date) &
+    (df_day['dteday'].dt.date <= st.session_state.end_date)
+]
 
 # Cek apakah ada data yang tersedia setelah filter
 if filtered_df.empty:
@@ -96,8 +148,8 @@ if analysis == "Pola Harian":
     # Filter df_hour berdasarkan parameter yang dipilih
     filtered_hour = df_hour[
         (df_hour['season'] == season_key) &
-        (df_hour['dteday'].dt.date >= start_date) &
-        (df_hour['dteday'].dt.date <= end_date) &
+        (df_hour['dteday'].dt.date >= st.session_state.start_date) &
+        (df_hour['dteday'].dt.date <= st.session_state.end_date) &
         (df_hour['workingday'] == workingday_key) &
         (df_hour['temp'] >= min_temp) &
         (df_hour['temp'] <= max_temp)
@@ -165,7 +217,3 @@ elif analysis == "RFM":
     st.write("""
     - **Tabel ini membantu kita memahami performa hari-hari tertentu berdasarkan tiga faktor: Recency, Frequency, dan Monetary.**
     - **Recency:** Menunjukkan seberapa baru hari tersebut dalam dataset. Hari-hari dengan nilai rendah adalah hari-hari terbaru.
-    - **Frequency:** Menunjukkan berapa kali sepeda disewa dalam satu hari. Hari-hari dengan frekuensi tinggi biasanya merupakan hari-hari sibuk seperti akhir pekan atau hari libur.
-    - **Monetary:** Mencerminkan total pendapatan dari penyewaan sepeda pada hari tersebut. Hari-hari dengan nilai tinggi memberikan kontribusi besar bagi bisnis.
-    - Anda bisa menggunakan analisis ini untuk fokus pada hari-hari penting yang memberikan dampak besar pada bisnis, seperti akhir pekan atau musim liburan!
-    """)
