@@ -43,7 +43,7 @@ Jika ada pertanyaan atau masukan, silakan hubungi saya:
 
 📧 Email: [wahyupelitajaya1@gmail.com]
 
-🔗 Instagram: @wahyupelj
+🔗 Instagram: [https://www.instagram.com/wahyupelj/]
 
 🔗 LinkedIn: [https://www.linkedin.com/in/wahyu-pelita-jaya-2b4562151/]
 
