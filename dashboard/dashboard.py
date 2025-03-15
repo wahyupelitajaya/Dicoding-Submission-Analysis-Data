@@ -65,6 +65,19 @@ if filtered_df.empty:
         - Mungkin rentang tanggal yang dipilih tidak sesuai dengan musim yang dipilih.
         - Pastikan rentang tanggal dan musim sesuai dengan data historis.
     """)
+
+    # Rekomendasi rentang tanggal yang valid
+    valid_start_date, valid_end_date = get_valid_date_range_for_season(season_key)
+    if valid_start_date and valid_end_date:
+        st.info(f"""
+            **Rekomendasi:**  
+            Untuk musim **{selected_season}**, gunakan rentang tanggal berikut:  
+            - **Mulai:** {valid_start_date}  
+            - **Berakhir:** {valid_end_date}  
+            Ini akan memastikan data tersedia untuk analisis.
+        """)
+    else:
+        st.error("Tidak ada data yang tersedia untuk musim ini.")
 else:
     # Tampilkan keterangan tentang suhu rata-rata pada rentang tanggal yang dipilih
     avg_temp = filtered_df['temp'].mean()
