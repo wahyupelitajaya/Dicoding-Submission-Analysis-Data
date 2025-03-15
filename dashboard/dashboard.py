@@ -24,6 +24,12 @@ st.markdown("""
     <h2 style='text-align: center; font-size: 24px; margin-top: -20px;'>Analisis Penyewaan Sepeda 🚲</h2>
 """, unsafe_allow_html=True)
 
+st.markdown("---")
+st.write("""
+Eksplorasi tersedia dengan berbagai parameter seperti waktu, cuaca, dan musim.  
+Gunakan fitur interaktif di sidebar untuk menyesuaikan visualisasi sesuai kebutuhan Anda.
+""")
+
 # Sidebar untuk interaktivitas
 st.sidebar.header("Filter Data")
 
