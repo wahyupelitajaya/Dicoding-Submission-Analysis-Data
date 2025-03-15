@@ -2,10 +2,23 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
-# Load data
-df_day = pd.read_csv('../data/day.csv')
-df_hour = pd.read_csv('../data/hour.csv')
+# Dapatkan path absolut ke folder proyek
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Lokasi file script
+DATA_DIR = os.path.join(BASE_DIR, "../data")  # Folder 'data' di luar folder script
+
+# Path ke dataset
+DAY_CSV_PATH = os.path.join(DATA_DIR, "day.csv")
+HOUR_CSV_PATH = os.path.join(DATA_DIR, "hour.csv")
+
+# Load dataset
+try:
+    df_day = pd.read_csv(DAY_CSV_PATH)
+    df_hour = pd.read_csv(HOUR_CSV_PATH)
+except FileNotFoundError:
+    st.error("Dataset tidak ditemukan! Pastikan file 'day.csv' dan 'hour.csv' ada di folder 'data'.")
+    st.stop()
 
 st.title("Dashboard Analisis Penyewaan Sepeda 🚲")
 
