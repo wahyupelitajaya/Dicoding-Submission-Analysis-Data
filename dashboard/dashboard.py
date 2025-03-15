@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load data
-df_day = pd.read_csv('data/day.csv')
-df_hour = pd.read_csv('data/hour.csv')
+df_day = pd.read_csv('../data/day.csv')
+df_hour = pd.read_csv('../data/hour.csv')
 
 st.title("Dashboard Analisis Penyewaan Sepeda 🚲")
 
