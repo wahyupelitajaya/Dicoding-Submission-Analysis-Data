@@ -34,7 +34,7 @@ Gunakan fitur interaktif di sidebar untuk menyesuaikan visualisasi sesuai kebutu
 st.sidebar.header("Filter Data")
 
 # Filter berdasarkan musim
-seasons = {1: "Spring", 2: "Summer", 3: "Fall", 4: "Winter"}
+seasons = {1: "Musim Semi", 2: "Musim Panas", 3: "Musim gugur", 4: "Musim Dingin"}
 selected_season = st.sidebar.selectbox("Pilih Musim:", list(seasons.values()))
 season_key = [k for k, v in seasons.items() if v == selected_season][0]
 filtered_df = df_day[df_day['season'] == season_key]
