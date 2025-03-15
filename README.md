@@ -43,6 +43,8 @@ Jika ada pertanyaan atau masukan, silakan hubungi saya:
 
 📧 Email: [wahyupelitajaya1@gmail.com]
 
+🔗 Instagram: @wahyupelj
+
 🔗 LinkedIn: [https://www.linkedin.com/in/wahyu-pelita-jaya-2b4562151/]
 
 Terima kasih telah mengunjungi repositori ini!❤️ Semoga bermanfaat untuk analisis data dan visualisasi👍
