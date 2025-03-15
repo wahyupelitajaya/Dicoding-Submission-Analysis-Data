@@ -16,7 +16,13 @@ HOUR_CSV_PATH = os.path.join(DATA_DIR, "hour.csv")
 df_day = pd.read_csv(DAY_CSV_PATH)
 df_hour = pd.read_csv(HOUR_CSV_PATH)
 
-st.title("📊 Dashboard Analisis Penyewaan Sepeda 🚲")
+st.markdown("""
+    <h1 style='text-align: center; font-size: 48px; font-weight: bold;'>Dashboard 📊</h1>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+    <h2 style='text-align: center; font-size: 24px; margin-top: -20px;'>Analisis Penyewaan Sepeda 🚲</h2>
+""", unsafe_allow_html=True)
 
 # Sidebar untuk interaktivitas
 st.sidebar.header("Filter Data")
