@@ -13,12 +13,8 @@ DAY_CSV_PATH = os.path.join(DATA_DIR, "day.csv")
 HOUR_CSV_PATH = os.path.join(DATA_DIR, "hour.csv")
 
 # Load dataset
-try:
-    df_day = pd.read_csv(DAY_CSV_PATH)
-    df_hour = pd.read_csv(HOUR_CSV_PATH)
-except FileNotFoundError:
-    st.error("Dataset tidak ditemukan! Pastikan file 'day.csv' dan 'hour.csv' ada di folder 'data'.")
-    st.stop()
+df_day = pd.read_csv(DAY_CSV_PATH)
+df_hour = pd.read_csv(HOUR_CSV_PATH)
 
 st.title("Dashboard Analisis Penyewaan Sepeda 🚲")
 
