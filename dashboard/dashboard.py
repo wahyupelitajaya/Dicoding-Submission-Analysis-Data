@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-# Dapatkan path absolut ke folder proyek
+# karna file .py saya berada di folder yang berbeda dengan file .csv jadi saya pake metode ini
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Lokasi file script
 DATA_DIR = os.path.join(BASE_DIR, "../data")  # Folder 'data' di luar folder script
 
