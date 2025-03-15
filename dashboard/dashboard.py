@@ -71,7 +71,7 @@ if 'end_date' not in st.session_state:
 
 # Pilihan musim
 selected_season = st.sidebar.selectbox(
-    "Pilih Musim: /n*tekan lagi apabila tidak berubah",
+    "Pilih Musim: *tekan lagi apabila tidak berubah",
     list(seasons.values()),
     index=list(seasons.values()).index(st.session_state.selected_season)    
 )
