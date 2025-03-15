@@ -47,54 +47,6 @@ def get_date_range_for_season(season_key):
     max_date = season_filtered_df['dteday'].max().date()
     return min_date, max_date
 
-# Fungsi untuk mendapatkan rentang tanggal berdasarkan hari kerja atau libur
-def get_date_range_for_workingday(df, is_workingday):
-    """
-    Mengembalikan rentang tanggal (min_date, max_date) untuk hari kerja atau hari libur.
-    
-    Parameters:
-        df (pd.DataFrame): Dataset yang berisi kolom 'workingday' dan 'dteday'.
-        is_workingday (bool): True untuk hari kerja, False untuk hari libur.
-    
-    Returns:
-        tuple: Rentang tanggal (min_date, max_date) dalam format datetime.date.
-               Jika tidak ada data, mengembalikan (None, None).
-    """
-    # Filter dataset berdasarkan hari kerja atau libur
-    if is_workingday:
-        filtered_df = df[df['workingday'] == 1]  # Hari kerja
-    else:
-        filtered_df = df[df['workingday'] == 0]  # Hari libur
-    
-    # Cek apakah ada data
-    if filtered_df.empty:
-        return None, None
-    
-    # Dapatkan rentang tanggal minimum dan maksimum
-    min_date = filtered_df['dteday'].min().date()
-    max_date = filtered_df['dteday'].max().date()
-    
-    return min_date, max_date
-
-# Contoh penggunaan fungsi
-if __name__ == "__main__":
-    # Load dataset
-    df_day = pd.read_csv("day.csv")
-    
-    # Konversi kolom tanggal menjadi datetime
-    df_day['dteday'] = pd.to_datetime(df_day['dteday'])
-    
-    # Pilih hari kerja atau libur
-    is_workingday = True  # Misalnya, pilih hari kerja
-    
-    # Dapatkan rentang tanggal untuk hari kerja atau libur
-    min_date, max_date = get_date_range_for_workingday(df_day, is_workingday)
-    
-    if min_date and max_date:
-        print(f"Rentang tanggal untuk {'hari kerja' if is_workingday else 'hari libur'}: {min_date} - {max_date}")
-    else:
-        print(f"Tidak ada data tersedia untuk {'hari kerja' if is_workingday else 'hari libur'}.")
-
 # Fungsi untuk mendapatkan musim berdasarkan tanggal
 def get_season_for_date(date):
     season_mapping = {
@@ -173,6 +125,7 @@ else:
         **Informasi Tambahan:**
         - Suhu rata-rata pada rentang tanggal ini: **{avg_temp:.2f}** (normalisasi).
         - Sensasi suhu rata-rata: **{avg_atemp:.2f}** (normalisasi).
+        - Pastikan kondisi cuaca dan suhu ini sesuai dengan ekspektasi Anda.
     """)
 
 # Filter berdasarkan hari kerja atau hari libur
@@ -190,25 +143,6 @@ temp_filtered_df = filtered_df[(filtered_df['temp'] >= min_temp) & (filtered_df[
 
 # Sidebar untuk pilih analisis
 analysis = st.sidebar.selectbox("Pilih Analisis:", ["Pola Harian", "Pengaruh Cuaca", "RFM"])
-
-# Sidebar untuk memilih hari kerja atau libur
-workingday_options = {0: "Hari Libur", 1: "Hari Kerja"}
-selected_workingday = st.sidebar.selectbox("Pilih Hari Kerja:", list(workingday_options.values()))
-is_workingday = selected_workingday == "Hari Kerja"
-
-# Dapatkan rentang tanggal untuk hari kerja atau libur
-min_date, max_date = get_date_range_for_workingday(df_day, is_workingday)
-
-if min_date and max_date:
-    # Atur rentang tanggal di sidebar
-    start_date, end_date = st.sidebar.date_input(
-        "Pilih Rentang Tanggal:",
-        value=(min_date, max_date),
-        min_value=min_date,
-        max_value=max_date
-    )
-else:
-    st.warning(f"Tidak ada data tersedia untuk {selected_workingday}.")
 
 if analysis == "Pola Harian":
     st.header("📈 Pola Penyewaan per Jam")
