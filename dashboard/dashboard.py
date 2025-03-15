@@ -20,6 +20,79 @@ df_hour = pd.read_csv(HOUR_CSV_PATH)
 df_day['dteday'] = pd.to_datetime(df_day['dteday'])
 df_hour['dteday'] = pd.to_datetime(df_hour['dteday'])
 
+# Konfigurasi CSS untuk ubah tema
+st.markdown("""
+    <style>
+        /* Warna latar belakang */
+        .stApp {
+            background-color: #F5F5F5; /* Abu-abu muda */
+        }
+
+        /* Judul utama */
+        h1 {
+            color: #4A4A4A; /* Abu-abu gelap */
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            font-size: 48px;
+        }
+
+        /* Subjudul */
+        h2 {
+            color: #6C6C6C; /* Abu-abu sedang */
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            font-size: 24px;
+        }
+
+        /* Teks biasa */
+        p {
+            color: #333333; /* Hitam pekat */
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+        }
+
+        /* Sidebar */
+        .css-1d391kg {
+            background-color: #EAEAEA; /* Abu-abu sangat muda */
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        /* Tombol */
+        .stButton>button {
+            background-color: #B2D8B2; /* Hijau muda */
+            color: #333333; /* Hitam pekat */
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            padding: 10px 20px;
+        }
+
+        /* Slider */
+        .stSlider>div>div>div:nth-child(1) {
+            background-color: #D3D3D3; /* Abu-abu muda */
+        }
+        .stSlider>div>div>div:nth-child(2) {
+            background-color: #87CEEB; /* Biru langit */
+        }
+
+        /* Grafik */
+        .stPlotlyChart {
+            border: 1px solid #D3D3D3; /* Border tipis abu-abu */
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        /* Tabel */
+        .stDataFrame {
+            background-color: #FFFFFF; /* Putih */
+            border: 1px solid #D3D3D3; /* Abu-abu muda */
+            border-radius: 10px;
+            padding: 10px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 st.markdown("""
     <h1 style='text-align: center; font-size: 48px; font-weight: bold;'>Dashboard 📊</h1>
 """, unsafe_allow_html=True)
