@@ -125,7 +125,6 @@ else:
         **Informasi Tambahan:**
         - Suhu rata-rata pada rentang tanggal ini: **{avg_temp:.2f}** (normalisasi).
         - Sensasi suhu rata-rata: **{avg_atemp:.2f}** (normalisasi).
-        - Pastikan kondisi cuaca dan suhu ini sesuai dengan ekspektasi Anda.
     """)
 
 # Filter berdasarkan hari kerja atau hari libur
