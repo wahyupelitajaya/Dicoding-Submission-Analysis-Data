@@ -140,6 +140,31 @@ st.sidebar.subheader("Rentang Suhu (Normalisasi)")
 min_temp, max_temp = st.sidebar.slider("Pilih Rentang Suhu:", 0.0, 1.0, (0.2, 0.8))
 temp_filtered_df = filtered_df[(filtered_df['temp'] >= min_temp) & (filtered_df['temp'] <= max_temp)]
 
+# Cek apakah ada data yang tersedia setelah filter hari kerja/libur
+if temp_filtered_df.empty:
+    # Jika tidak ada data, tampilkan keterangan untuk membantu pengguna
+    if workingday_key == 1:
+        st.warning("""
+            **Tidak ada data yang tersedia untuk rentang tanggal ini sebagai hari kerja.**
+            - Tampaknya tanggal yang dipilih bukan termasuk hari kerja.
+            - Cobalah memilih rentang tanggal yang mencakup hari Senin hingga Jumat.
+        """)
+    else:
+        st.warning("""
+            **Tidak ada data yang tersedia untuk rentang tanggal ini sebagai hari libur.**
+            - Tampaknya tanggal yang dipilih bukan termasuk hari libur.
+            - Cobalah memilih rentang tanggal yang mencakup akhir pekan (Sabtu/Minggu) atau hari libur nasional.
+        """)
+else:
+    # Tampilkan keterangan tambahan jika data tersedia
+    avg_temp = temp_filtered_df['temp'].mean()
+    avg_atemp = temp_filtered_df['atemp'].mean()
+    st.info(f"""
+        **Informasi Tambahan:**
+        - Suhu rata-rata pada rentang tanggal ini: **{avg_temp:.2f}** (normalisasi).
+        - Sensasi suhu rata-rata: **{avg_atemp:.2f}** (normalisasi).
+    """)
+
 # Sidebar untuk pilih analisis
 analysis = st.sidebar.selectbox("Pilih Analisis:", ["Pola Harian", "Pengaruh Cuaca", "RFM"])
 
