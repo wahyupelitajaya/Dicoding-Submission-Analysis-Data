@@ -222,6 +222,22 @@ elif analysis == "RFM":
     # Tampilkan dataframe RFM
     st.dataframe(rfm)
 
+        # Cek apakah ada data dalam RFM
+    if rfm.empty:
+        st.warning("Tidak ada data RFM yang tersedia. Pastikan dataset memiliki data yang sesuai.")
+    else:
+
+        # Alternatif visualisasi: Histogram untuk setiap kolom RFM
+        st.write("### Histogram RFM")
+        fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+        sns.histplot(rfm['recency'], ax=axes[0], kde=True, color='blue')
+        axes[0].set_title("Recency")
+        sns.histplot(rfm['frequency'], ax=axes[1], kde=True, color='green')
+        axes[1].set_title("Frequency")
+        sns.histplot(rfm['monetary'], ax=axes[2], kde=True, color='red')
+        axes[2].set_title("Monetary")
+        st.pyplot(fig)
+
     # Insight untuk RFM
     st.write("""
     - **Tabel ini membantu kita memahami performa hari-hari tertentu berdasarkan tiga faktor: Recency, Frequency, dan Monetary.**
