@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-# karna file .py saya berada di folder yang berbeda dengan file .csv jadi saya pake metode ini
+# Karena file .py saya berada di folder yang berbeda dengan file .csv jadi saya pake metode ini
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Lokasi file script
 DATA_DIR = os.path.join(BASE_DIR, "../data")  # Folder 'data' di luar folder script
 
@@ -15,6 +15,10 @@ HOUR_CSV_PATH = os.path.join(DATA_DIR, "hour.csv")
 # Load dataset
 df_day = pd.read_csv(DAY_CSV_PATH)
 df_hour = pd.read_csv(HOUR_CSV_PATH)
+
+# Konversi kolom tanggal menjadi datetime
+df_day['dteday'] = pd.to_datetime(df_day['dteday'])
+df_hour['dteday'] = pd.to_datetime(df_hour['dteday'])
 
 st.markdown("""
     <h1 style='text-align: center; font-size: 48px; font-weight: bold;'>Dashboard 📊</h1>
@@ -34,16 +38,24 @@ Gunakan fitur interaktif di sidebar untuk menyesuaikan visualisasi sesuai kebutu
 st.sidebar.header("Filter Data")
 
 # Filter berdasarkan musim
-seasons = {1: "Musim Semi", 2: "Musim Panas", 3: "Musim gugur", 4: "Musim Dingin"}
+seasons = {1: "Musim Semi", 2: "Musim Panas", 3: "Musim Gugur", 4: "Musim Dingin"}
 selected_season = st.sidebar.selectbox("Pilih Musim:", list(seasons.values()))
 season_key = [k for k, v in seasons.items() if v == selected_season][0]
 filtered_df = df_day[df_day['season'] == season_key]
 
-# Filter berdasarkan tahun
-years = {0: "2011", 1: "2012"}
-selected_year = st.sidebar.selectbox("Pilih Tahun:", list(years.values()))
-year_key = [k for k, v in years.items() if v == selected_year][0]
-filtered_df = filtered_df[filtered_df['yr'] == year_key]
+# Filter berdasarkan rentang tanggal menggunakan kalender
+st.sidebar.subheader("Pilih Rentang Tanggal:")
+min_date = df_day['dteday'].min().date()  # Tanggal awal dataset
+max_date = df_day['dteday'].max().date()  # Tanggal akhir dataset
+start_date, end_date = st.sidebar.date_input(
+    "Pilih rentang tanggal:",
+    value=(min_date, max_date),
+    min_value=min_date,
+    max_value=max_date
+)
+
+# Filter dataset berdasarkan rentang tanggal
+filtered_df = filtered_df[(filtered_df['dteday'].dt.date >= start_date) & (filtered_df['dteday'].dt.date <= end_date)]
 
 # Filter berdasarkan hari kerja
 workingday_options = {0: "Hari Libur", 1: "Hari Kerja"}
@@ -65,7 +77,8 @@ if analysis == "Pola Harian":
     # Filter df_hour berdasarkan parameter yang dipilih
     filtered_hour = df_hour[
         (df_hour['season'] == season_key) &
-        (df_hour['yr'] == year_key) &
+        (df_hour['dteday'].dt.date >= start_date) &
+        (df_hour['dteday'].dt.date <= end_date) &
         (df_hour['workingday'] == workingday_key) &
         (df_hour['temp'] >= min_temp) &
         (df_hour['temp'] <= max_temp)
