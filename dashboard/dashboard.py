@@ -49,7 +49,18 @@ analysis = st.sidebar.selectbox("Pilih Analisis:", ["Pola Harian", "Pengaruh Cua
 
 if analysis == "Pola Harian":
     st.header("📈 Pola Penyewaan per Jam")
-    hourly_rentals = df_hour.groupby('hr')['cnt'].mean().reset_index()
+
+    # Filter df_hour berdasarkan parameter yang dipilih
+    filtered_hour = df_hour[
+        (df_hour['season'] == season_key) &
+        (df_hour['yr'] == year_key) &
+        (df_hour['workingday'] == workingday_key) &
+        (df_hour['temp'] >= min_temp) &
+        (df_hour['temp'] <= max_temp)
+    ]
+
+    # Hitung rata-rata penyewaan per jam berdasarkan data yang difilter
+    hourly_rentals = filtered_hour.groupby('hr')['cnt'].mean().reset_index()
 
     # Visualisasi
     fig, ax = plt.subplots(figsize=(10, 5))
