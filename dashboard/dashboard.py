@@ -152,8 +152,15 @@ elif analysis == "Pengaruh Cuaca":
 elif analysis == "Hari Kerja vs Libur":
     st.header("📅 Rata-rata Penyewaan Berdasarkan Hari Kerja/Libur")
 
-    # Hitung rata-rata total penyewaan berdasarkan hari kerja/libur
-    workday_analysis = df_day.groupby('workingday')['total_sewa'].mean().reset_index()
+    # Filter dataset hari (df_day) berdasarkan parameter yang dipilih di sidebar
+    filtered_day = df_day[
+        (df_day['suhu'] >= min_temp) & (df_day['suhu'] <= max_temp) &
+        (df_day['kelembaban'] >= min_humidity) & (df_day['kelembaban'] <= max_humidity) &
+        (df_day['kecepatan_angin'] >= min_windspeed) & (df_day['kecepatan_angin'] <= max_windspeed)
+    ]
+
+    # Hitung rata-rata total penyewaan berdasarkan hari kerja/libur dari dataset yang sudah difilter
+    workday_analysis = filtered_day.groupby('workingday')['total_sewa'].mean().reset_index()
     workday_analysis['workingday'] = workday_analysis['workingday'].map({0: "Hari Libur", 1: "Hari Kerja"})
 
     # Visualisasi
