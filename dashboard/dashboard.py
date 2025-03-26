@@ -2,22 +2,13 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os
-
-# Karena file .py saya berada di folder yang berbeda dengan file .csv jadi saya pake metode ini
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Lokasi file script
-DATA_DIR = os.path.join(BASE_DIR, "../data")  # Folder 'data' di luar folder script
-
-# Path ke dataset
-DAY_CSV_PATH = os.path.join(DATA_DIR, "day.csv")
-HOUR_CSV_PATH = os.path.join(DATA_DIR, "hour.csv")
 
 # Load dataset
-df_day = pd.read_csv(DAY_CSV_PATH)
-df_hour = pd.read_csv(HOUR_CSV_PATH)
+day_df = pd.read_csv("https://raw.githubusercontent.com/wahyupelitajaya/Dicoding-Submission-Analysis-Data/refs/heads/main/data/day.csv")
+hour_df = pd.read_csv("https://raw.githubusercontent.com/wahyupelitajaya/Dicoding-Submission-Analysis-Data/refs/heads/main/data/hour.csv")
 
 # Rename kolom untuk kemudahan
-df_day.rename(columns={
+day_df.rename(columns={
     'dteday': 'tanggal',
     'weathersit': 'cuaca',
     'temp': 'suhu',
@@ -26,7 +17,7 @@ df_day.rename(columns={
     'cnt': 'total_sewa'
 }, inplace=True)
 
-df_hour.rename(columns={
+hour_df.rename(columns={
     'dteday': 'tanggal',
     'hr': 'jam',
     'weathersit': 'cuaca',
@@ -37,8 +28,8 @@ df_hour.rename(columns={
 }, inplace=True)
 
 # Konversi kolom tanggal ke datetime
-df_day['tanggal'] = pd.to_datetime(df_day['tanggal'])
-df_hour['tanggal'] = pd.to_datetime(df_hour['tanggal'])
+day_df['tanggal'] = pd.to_datetime(day_df['tanggal'])
+hour_df['tanggal'] = pd.to_datetime(hour_df['tanggal'])
 
 # Judul
 st.markdown("""<h1 style='text-align: center; font-size: 48px; font-weight: bold;'>Dashboard 📊</h1>""", unsafe_allow_html=True)
@@ -72,12 +63,12 @@ selected_workingday = st.sidebar.selectbox("Pilih Hari Kerja/Libur:", list(worki
 workingday_key = [k for k, v in workingday_options.items() if v == selected_workingday][0]
 
 # Filter dataset berdasarkan parameter yang dipilih
-filtered_hour = df_hour[
-    (df_hour['jam'] >= min_hour) & (df_hour['jam'] <= max_hour) &
-    (df_hour['suhu'] >= min_temp) & (df_hour['suhu'] <= max_temp) &
-    (df_hour['kelembaban'] >= min_humidity) & (df_hour['kelembaban'] <= max_humidity) &
-    (df_hour['kecepatan_angin'] >= min_windspeed) & (df_hour['kecepatan_angin'] <= max_windspeed) &
-    (df_hour['workingday'] == workingday_key)
+filtered_hour = hour_df[
+    (hour_df['jam'] >= min_hour) & (hour_df['jam'] <= max_hour) &
+    (hour_df['suhu'] >= min_temp) & (hour_df['suhu'] <= max_temp) &
+    (hour_df['kelembaban'] >= min_humidity) & (hour_df['kelembaban'] <= max_humidity) &
+    (hour_df['kecepatan_angin'] >= min_windspeed) & (hour_df['kecepatan_angin'] <= max_windspeed) &
+    (hour_df['workingday'] == workingday_key)
 ]
 
 # Sidebar untuk pilih analisis
@@ -152,11 +143,11 @@ elif analysis == "Pengaruh Cuaca":
 elif analysis == "Hari Kerja vs Libur":
     st.header("📅 Rata-rata Penyewaan Berdasarkan Hari Kerja/Libur")
 
-    # Filter dataset hari (df_day) berdasarkan parameter yang dipilih di sidebar
-    filtered_day = df_day[
-        (df_day['suhu'] >= min_temp) & (df_day['suhu'] <= max_temp) &
-        (df_day['kelembaban'] >= min_humidity) & (df_day['kelembaban'] <= max_humidity) &
-        (df_day['kecepatan_angin'] >= min_windspeed) & (df_day['kecepatan_angin'] <= max_windspeed)
+    # Filter dataset hari (day_df) berdasarkan parameter yang dipilih di sidebar
+    filtered_day = day_df[
+        (day_df['suhu'] >= min_temp) & (day_df['suhu'] <= max_temp) &
+        (day_df['kelembaban'] >= min_humidity) & (day_df['kelembaban'] <= max_humidity) &
+        (day_df['kecepatan_angin'] >= min_windspeed) & (day_df['kecepatan_angin'] <= max_windspeed)
     ]
 
     # Hitung rata-rata total penyewaan berdasarkan hari kerja/libur dari dataset yang sudah difilter
