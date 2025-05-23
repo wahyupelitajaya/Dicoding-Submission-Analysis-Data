@@ -3,169 +3,152 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Load dataset
+# Load datasets
 day_df = pd.read_csv("https://raw.githubusercontent.com/wahyupelitajaya/Dicoding-Submission-Analysis-Data/refs/heads/main/data/day.csv")
 hour_df = pd.read_csv("https://raw.githubusercontent.com/wahyupelitajaya/Dicoding-Submission-Analysis-Data/refs/heads/main/data/hour.csv")
 
-# Rename kolom untuk kemudahan
-day_df.rename(columns={
-    'dteday': 'tanggal',
-    'weathersit': 'cuaca',
-    'temp': 'suhu',
-    'hum': 'kelembaban',
-    'windspeed': 'kecepatan_angin',
-    'cnt': 'total_sewa'
-}, inplace=True)
+# Data cleaning and renaming columns for day_df
+day_df['dteday'] = pd.to_datetime(day_df['dteday'])
+day_df = day_df.drop(['instant', 'holiday'], axis=1)
+day_df = day_df.rename(columns={
+    'dteday': 'date',
+    'yr': 'year',
+    'mnth': 'month',
+    'weekday': 'day',
+    'workingday': 'day_type',
+    'weathersit': 'weather_type',
+    'atemp': 'feels',
+    'hum': 'humidity',
+    'cnt': 'total'
+})
+day_df['season'] = day_df['season'].replace({1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'}).astype(str)
+day_df['month'] = day_df['month'].replace({
+    1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
+    7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
+}).astype(str)
+day_df['day'] = day_df['day'].replace({
+    0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday',
+    4: 'Thursday', 5: 'Friday', 6: 'Saturday'
+}).astype(str)
+day_df['day_type'] = day_df['day_type'].replace({0: 'Working Day', 1: 'Weekend'}).astype(str)
+day_df['weather_type'] = day_df['weather_type'].replace({
+    1: 'Clear/Cloudy', 2: 'Mist', 3: 'Light Snow/Rain', 4: 'Heavy Rain/Fog'
+}).astype(str)
 
-hour_df.rename(columns={
-    'dteday': 'tanggal',
-    'hr': 'jam',
-    'weathersit': 'cuaca',
-    'temp': 'suhu',
-    'hum': 'kelembaban',
-    'windspeed': 'kecepatan_angin',
-    'cnt': 'total_sewa'
-}, inplace=True)
+# Data cleaning and renaming columns for hour_df
+hour_df['dteday'] = pd.to_datetime(hour_df['dteday'])
+hour_df = hour_df.drop(['instant', 'holiday'], axis=1)
+hour_df = hour_df.rename(columns={
+    'dteday': 'date',
+    'yr': 'year',
+    'mnth': 'month',
+    'hr': 'hour',
+    'weekday': 'day',
+    'workingday': 'day_type',
+    'weathersit': 'weather_type',
+    'atemp': 'feels',
+    'hum': 'humidity',
+    'cnt': 'total'
+})
+hour_df['season'] = hour_df['season'].replace({1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'}).astype(str)
+hour_df['month'] = hour_df['month'].replace({
+    1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
+    7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
+}).astype(str)
+hour_df['day'] = hour_df['day'].replace({
+    0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday',
+    4: 'Thursday', 5: 'Friday', 6: 'Saturday'
+}).astype(str)
+hour_df['day_type'] = hour_df['day_type'].replace({0: 'Working Day', 1: 'Weekend'}).astype(str)
+hour_df['weather_type'] = hour_df['weather_type'].replace({
+    1: 'Clear/Cloudy', 2: 'Mist', 3: 'Light Snow/Rain', 4: 'Heavy Rain/Fog'
+}).astype(str)
 
-# Konversi kolom tanggal ke datetime
-day_df['tanggal'] = pd.to_datetime(day_df['tanggal'])
-hour_df['tanggal'] = pd.to_datetime(hour_df['tanggal'])
+# Streamlit dashboard layout
+st.title("Bike Sharing Data Analysis Dashboard")
 
-# Judul
-st.markdown("""<h1 style='text-align: center; font-size: 48px; font-weight: bold;'>Dashboard 📊</h1>""", unsafe_allow_html=True)
-st.markdown("""<h2 style='text-align: center; font-size: 24px; margin-top: -20px;'>Analisis Penyewaan Sepeda 🚴‍♂️</h2>""", unsafe_allow_html=True)
-st.markdown("---")
+# Section 1: Seasonal bike usage by year
+st.header("Seasonal Bike Usage by Year")
+season_counts = day_df.groupby(['season', 'year']).agg({'total': 'sum'}).reset_index()
+plt.figure(figsize=(10, 6))
+sns.barplot(data=season_counts, x='season', y='total', hue='year', palette='viridis')
+plt.xlabel("Season")
+plt.ylabel("Total Bike Rentals")
+plt.title("Total Bike Rentals by Season and Year")
+plt.grid(True, axis='y', linestyle='--')
+st.pyplot(plt)
 st.write("""
-Eksplorasi tersedia dengan berbagai parameter seperti waktu, cuaca, dan musim.
-Gunakan fitur interaktif di sidebar untuk menyesuaikan visualisasi sesuai kebutuhan Anda.
+- Summer has the highest total bike rentals for both years.
+- Fall also shows high usage, especially in 2012.
+- Spring and Winter have lower rentals, with Winter being the lowest.
 """)
 
-# Sidebar untuk interaktivitas
-st.sidebar.header("Filter Data")
+# Section 2: Usage by day type (Working Day vs Weekend)
+st.header("Bike Usage by Day Type")
+day_type_totals = day_df.groupby('day_type')['total'].sum()
+plt.figure(figsize=(6, 6))
+plt.pie(day_type_totals, labels=day_type_totals.index, autopct='%1.1f%%', startangle=90)
+plt.title("Total Bike Shares by Day Type")
+st.pyplot(plt)
+st.write("""
+- Bike usage is higher on weekends compared to working days.
+- This suggests recreational use is more common on weekends.
+""")
 
-# Filter berdasarkan jam
-st.sidebar.subheader("Rentang Jam")
-min_hour, max_hour = st.sidebar.slider("Pilih Rentang Jam:", 0, 23, (6, 18))
+# Section 3: Weather impact on usage by year
+st.header("Weather Impact on Bike Usage by Year")
+weather_counts = day_df.groupby(['weather_type', 'year']).agg({'total': 'sum'}).reset_index()
+plt.figure(figsize=(10, 6))
+sns.barplot(data=weather_counts, x='weather_type', y='total', hue='year', palette='viridis')
+plt.xlabel("Weather Type")
+plt.ylabel("Total Bike Rentals")
+plt.title("Total Bike Rentals by Weather Type and Year")
+plt.grid(True, axis='y', linestyle='--')
+st.pyplot(plt)
+st.write("""
+- Clear/Cloudy weather has the highest bike rentals.
+- Light Snow/Rain and Heavy Rain/Fog have significantly lower rentals.
+- Weather conditions strongly affect bike usage.
+""")
 
-# Filter berdasarkan cuaca (suhu, kelembaban, kecepatan angin)
-st.sidebar.subheader("Rentang Suhu (Normalisasi)")
-min_temp, max_temp = st.sidebar.slider("Pilih Rentang Suhu:", 0.0, 1.0, (0.2, 0.8))
+# Section 4: Clustering analysis of casual and registered users by month
+st.header("Clustering of Casual and Registered Users by Month")
 
-st.sidebar.subheader("Rentang Kelembaban (%)")
-min_humidity, max_humidity = st.sidebar.slider("Pilih Rentang Kelembaban:", 0.0, 1.0, (0.2, 0.8))
+def casual_and_registered(df, low_threshold=(30000, 200000), medium_threshold=(50000, 300000)):
+    monthly_data = df.groupby('month').agg({'casual': 'sum', 'registered': 'sum'})
+    clusters = {}
+    low_casual, low_registered = low_threshold
+    med_casual, med_registered = medium_threshold
 
-st.sidebar.subheader("Rentang Kecepatan Angin (Normalisasi)")
-min_windspeed, max_windspeed = st.sidebar.slider("Pilih Rentang Kecepatan Angin:", 0.0, 1.0, (0.1, 0.5))
+    for month, row in monthly_data.iterrows():
+        casual = row['casual']
+        registered = row['registered']
 
-# Filter berdasarkan hari libur atau hari kerja
-workingday_options = {0: "Hari Libur", 1: "Hari Kerja"}
-selected_workingday = st.sidebar.selectbox("Pilih Hari Kerja/Libur:", list(workingday_options.values()))
-workingday_key = [k for k, v in workingday_options.items() if v == selected_workingday][0]
+        if casual < low_casual and registered < low_registered:
+            cluster_name = 'Low Usage'
+        elif casual < med_casual and registered < med_registered:
+            cluster_name = 'Medium Usage'
+        else:
+            cluster_name = 'High Usage'
 
-# Filter dataset berdasarkan parameter yang dipilih
-filtered_hour = hour_df[
-    (hour_df['jam'] >= min_hour) & (hour_df['jam'] <= max_hour) &
-    (hour_df['suhu'] >= min_temp) & (hour_df['suhu'] <= max_temp) &
-    (hour_df['kelembaban'] >= min_humidity) & (hour_df['kelembaban'] <= max_humidity) &
-    (hour_df['kecepatan_angin'] >= min_windspeed) & (hour_df['kecepatan_angin'] <= max_windspeed) &
-    (hour_df['workingday'] == workingday_key)
-]
+        if cluster_name not in clusters:
+            clusters[cluster_name] = []
+        clusters[cluster_name].append((casual, registered, month))
 
-# Sidebar untuk pilih analisis
-analysis = st.sidebar.selectbox("Pilih Analisis:", ["Pola Harian", "Pengaruh Cuaca", "Hari Kerja vs Libur"])
+    plt.figure(figsize=(10, 6))
+    for cluster_name, dots in clusters.items():
+        x_values = [point[0] for point in dots]
+        y_values = [point[1] for point in dots]
+        month_labels = [point[2] for point in dots]
+        plt.scatter(x_values, y_values, label=cluster_name)
+        for j, month in enumerate(month_labels):
+            plt.text(x_values[j], y_values[j], month, fontsize=8, ha='right', va='bottom')
 
-# Analisis Pola Harian
-if analysis == "Pola Harian":
-    st.header("📊 Pola Penyewaan per Jam")
-    
-    # Agregasi rata-rata penyewaan per jam berdasarkan data yang difilter
-    hourly_rentals = filtered_hour.groupby('jam')['total_sewa'].mean().reset_index()
-
-    # Visualisasi
-    plt.figure(figsize=(12, 6))
-    sns.lineplot(x='jam', y='total_sewa', data=hourly_rentals, marker='o')
-    plt.title('Pola Penyewaan Sepeda per Jam 🕕')
-    plt.xlabel('Jam')
-    plt.ylabel('Rata-Rata Penyewaan')
+    plt.xlabel('Total Casual Users')
+    plt.ylabel('Total Registered Users')
+    plt.title('Clustering of Casual and Registered Users by Month')
+    plt.legend()
     plt.grid(True)
     st.pyplot(plt)
 
-    # Insight untuk Pola Harian
-    st.write("""
-    - **Grafik ini menunjukkan pola penyewaan sepeda setiap jam dalam sehari.**
-    - Terlihat bahwa penyewaan meningkat pada pagi hari (sekitar jam 7–9) dan sore hari (sekitar jam 17–19). 
-      Ini biasanya terjadi karena banyak orang menggunakan sepeda untuk pergi ke kantor atau sekolah.
-    - Pada malam hari (setelah jam 21), jumlah penyewaan menurun drastis karena aktivitas masyarakat umumnya berkurang.
-    - Anda bisa memanfaatkan informasi ini untuk memastikan jumlah sepeda tersedia cukup di jam-jam sibuk!
-    """)
-
-# Analisis Pengaruh Cuaca
-elif analysis == "Pengaruh Cuaca":
-    st.header("🌤️ Pengaruh Cuaca terhadap Penyewaan")
-
-    # Scatterplot 1: Hubungan antara suhu & cuaca dengan total penyewaan
-    plt.figure(figsize=(18, 6))
-
-    plt.subplot(1, 3, 1)  # 1 baris, 3 kolom, plot pertama
-    sns.scatterplot(x='suhu', y='total_sewa', hue='cuaca', data=filtered_hour)
-    plt.title('Pengaruh Suhu dan Cuaca terhadap Penyewaan')
-    plt.xlabel('Suhu (°C)')
-    plt.ylabel('Total Penyewaan Sepeda')
-
-    # Scatterplot 2: Hubungan antara kelembapan dengan total penyewaan
-    plt.subplot(1, 3, 2)  # 1 baris, 3 kolom, plot kedua
-    sns.scatterplot(x='kelembaban', y='total_sewa', hue='cuaca', data=filtered_hour)
-    plt.title('Pengaruh Kelembapan terhadap Penyewaan')
-    plt.xlabel('Kelembapan (%)')
-    plt.ylabel('Total Penyewaan Sepeda')
-
-    # Scatterplot 3: Hubungan antara kecepatan angin dengan total penyewaan
-    plt.subplot(1, 3, 3)  # 1 baris, 3 kolom, plot ketiga
-    sns.scatterplot(x='kecepatan_angin', y='total_sewa', hue='cuaca', data=filtered_hour)
-    plt.title('Pengaruh Kecepatan Angin terhadap Penyewaan')
-    plt.xlabel('Kecepatan Angin (km/h)')
-    plt.ylabel('Total Penyewaan Sepeda')
-
-    # Tampilkan semua plot
-    plt.tight_layout()
-    st.pyplot(plt)
-
-    # Insight untuk Pengaruh Cuaca
-    st.write("""
-    - **Grafik ini menunjukkan pengaruh cuaca terhadap pola penyewaan sepeda.**
-    - Suhu hangat cenderung meningkatkan jumlah penyewaan, sementara suhu dingin menurunkannya.
-    - Kelembapan tinggi sedikit mengurangi minat penyewaan, kemungkinan karena kondisi lembap kurang nyaman untuk bersepeda.
-    - Kecepatan angin rendah hingga sedang membuat berkendara lebih nyaman, sehingga jumlah penyewaan cenderung meningkat.
-    - Informasi ini bisa membantu Anda memprediksi lonjakan penyewaan berdasarkan kondisi cuaca!
-    """)
-
-# Analisis Hari Kerja vs Libur
-elif analysis == "Hari Kerja vs Libur":
-    st.header("📅 Rata-rata Penyewaan Berdasarkan Hari Kerja/Libur")
-
-    # Filter dataset hari (day_df) berdasarkan parameter yang dipilih di sidebar
-    filtered_day = day_df[
-        (day_df['suhu'] >= min_temp) & (day_df['suhu'] <= max_temp) &
-        (day_df['kelembaban'] >= min_humidity) & (day_df['kelembaban'] <= max_humidity) &
-        (day_df['kecepatan_angin'] >= min_windspeed) & (day_df['kecepatan_angin'] <= max_windspeed)
-    ]
-
-    # Hitung rata-rata total penyewaan berdasarkan hari kerja/libur dari dataset yang sudah difilter
-    workday_analysis = filtered_day.groupby('workingday')['total_sewa'].mean().reset_index()
-    workday_analysis['workingday'] = workday_analysis['workingday'].map({0: "Hari Libur", 1: "Hari Kerja"})
-
-    # Visualisasi
-    plt.figure(figsize=(8, 5))
-    sns.barplot(x='workingday', y='total_sewa', data=workday_analysis)
-    plt.title("Rata-rata Penyewaan Sepeda Berdasarkan Hari Kerja/Libur")
-    plt.xlabel("Hari")
-    plt.ylabel("Rata-rata Jumlah Penyewaan")
-    st.pyplot(plt)
-
-    # Insight untuk Hari Kerja vs Libur
-    st.write("""
-    - **Grafik ini menunjukkan perbandingan rata-rata penyewaan antara hari kerja dan hari libur.**
-    - Penyewaan lebih tinggi pada hari kerja dibandingkan hari libur.
-    - Hal ini menunjukkan bahwa sepeda lebih sering digunakan untuk komuter di hari kerja.
-    - Namun, hari libur juga memiliki potensi besar untuk meningkatkan penyewaan melalui promosi khusus.
-    """)
+casual_and_registered(hour_df)
