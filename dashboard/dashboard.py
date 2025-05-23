@@ -64,91 +64,115 @@ hour_df['weather_type'] = hour_df['weather_type'].replace({
     1: 'Clear/Cloudy', 2: 'Mist', 3: 'Light Snow/Rain', 4: 'Heavy Rain/Fog'
 }).astype(str)
 
+# Sidebar filters for global filtering
+st.sidebar.header("Filter Data")
+
+years = sorted(day_df['year'].unique())
+selected_years = st.sidebar.multiselect("Select Year(s)", years, default=years)
+
+seasons = sorted(day_df['season'].unique())
+selected_seasons = st.sidebar.multiselect("Select Season(s)", seasons, default=seasons)
+
+day_types = sorted(day_df['day_type'].unique())
+selected_day_types = st.sidebar.multiselect("Select Day Type(s)", day_types, default=day_types)
+
+weather_types = sorted(day_df['weather_type'].unique())
+selected_weather_types = st.sidebar.multiselect("Select Weather Type(s)", weather_types, default=weather_types)
+
+# Filter dataframes based on selections
+filtered_day_df = day_df[
+    (day_df['year'].isin(selected_years)) &
+    (day_df['season'].isin(selected_seasons)) &
+    (day_df['day_type'].isin(selected_day_types)) &
+    (day_df['weather_type'].isin(selected_weather_types))
+]
+
+filtered_hour_df = hour_df[
+    (hour_df['year'].isin(selected_years)) &
+    (hour_df['season'].isin(selected_seasons)) &
+    (hour_df['day_type'].isin(selected_day_types)) &
+    (hour_df['weather_type'].isin(selected_weather_types))
+]
+
 # Streamlit dashboard layout
 st.title("Bike Sharing Data Analysis Dashboard")
 
-# Section 1: Seasonal bike usage by year
-st.header("Seasonal Bike Usage by Year")
-season_counts = day_df.groupby(['season', 'year']).agg({'total': 'sum'}).reset_index()
-plt.figure(figsize=(10, 6))
-sns.barplot(data=season_counts, x='season', y='total', hue='year', palette='viridis')
-plt.xlabel("Season")
-plt.ylabel("Total Bike Rentals")
-plt.title("Total Bike Rentals by Season and Year")
-plt.grid(True, axis='y', linestyle='--')
-st.pyplot(plt)
-st.write("""
-- Summer has the highest total bike rentals for both years.
-- Fall also shows high usage, especially in 2012.
-- Spring and Winter have lower rentals, with Winter being the lowest.
-""")
-
-# Section 2: Usage by day type (Working Day vs Weekend)
-st.header("Bike Usage by Day Type")
-day_type_totals = day_df.groupby('day_type')['total'].sum()
-plt.figure(figsize=(6, 6))
-plt.pie(day_type_totals, labels=day_type_totals.index, autopct='%1.1f%%', startangle=90)
-plt.title("Total Bike Shares by Day Type")
-st.pyplot(plt)
-st.write("""
-- Bike usage is higher on weekends compared to working days.
-- This suggests recreational use is more common on weekends.
-""")
-
-# Section 3: Weather impact on usage by year
-st.header("Weather Impact on Bike Usage by Year")
-weather_counts = day_df.groupby(['weather_type', 'year']).agg({'total': 'sum'}).reset_index()
-plt.figure(figsize=(10, 6))
-sns.barplot(data=weather_counts, x='weather_type', y='total', hue='year', palette='viridis')
-plt.xlabel("Weather Type")
-plt.ylabel("Total Bike Rentals")
-plt.title("Total Bike Rentals by Weather Type and Year")
-plt.grid(True, axis='y', linestyle='--')
-st.pyplot(plt)
-st.write("""
-- Clear/Cloudy weather has the highest bike rentals.
-- Light Snow/Rain and Heavy Rain/Fog have significantly lower rentals.
-- Weather conditions strongly affect bike usage.
-""")
-
-# Section 4: Clustering analysis of casual and registered users by month
-st.header("Clustering of Casual and Registered Users by Month")
-
-def casual_and_registered(df, low_threshold=(30000, 200000), medium_threshold=(50000, 300000)):
-    monthly_data = df.groupby('month').agg({'casual': 'sum', 'registered': 'sum'})
-    clusters = {}
-    low_casual, low_registered = low_threshold
-    med_casual, med_registered = medium_threshold
-
-    for month, row in monthly_data.iterrows():
-        casual = row['casual']
-        registered = row['registered']
-
-        if casual < low_casual and registered < low_registered:
-            cluster_name = 'Low Usage'
-        elif casual < med_casual and registered < med_registered:
-            cluster_name = 'Medium Usage'
-        else:
-            cluster_name = 'High Usage'
-
-        if cluster_name not in clusters:
-            clusters[cluster_name] = []
-        clusters[cluster_name].append((casual, registered, month))
-
-    plt.figure(figsize=(10, 6))
-    for cluster_name, dots in clusters.items():
-        x_values = [point[0] for point in dots]
-        y_values = [point[1] for point in dots]
-        month_labels = [point[2] for point in dots]
-        plt.scatter(x_values, y_values, label=cluster_name)
-        for j, month in enumerate(month_labels):
-            plt.text(x_values[j], y_values[j], month, fontsize=8, ha='right', va='bottom')
-
-    plt.xlabel('Total Casual Users')
-    plt.ylabel('Total Registered Users')
-    plt.title('Clustering of Casual and Registered Users by Month')
-    plt.legend()
-    plt.grid(True)
+# Display Seasonal Bike Usage by Year in its own container
+with st.container():
+    st.header("Seasonal Bike Usage by Year")
+    season_counts = filtered_day_df.groupby(['season', 'year']).agg({'total': 'sum'}).reset_index()
+    plt.figure(figsize=(8, 5))
+    sns.barplot(data=season_counts, x='season', y='total', hue='year', palette='viridis')
+    plt.xlabel("Season")
+    plt.ylabel("Total Bike Rentals")
+    plt.title("Total Bike Rentals by Season and Year")
+    plt.grid(True, axis='y', linestyle='--')
     st.pyplot(plt)
+    plt.clf()
 
-casual_and_registered(hour_df)
+# Display Bike Usage by Day Type in its own container
+with st.container():
+    st.header("Bike Usage by Day Type")
+    day_type_totals = filtered_day_df.groupby('day_type')['total'].sum()
+    plt.figure(figsize=(6, 6))
+    plt.pie(day_type_totals, labels=day_type_totals.index, autopct='%1.1f%%', startangle=90)
+    plt.title("Total Bike Shares by Day Type")
+    st.pyplot(plt)
+    plt.clf()
+
+# Display Weather Impact on Bike Usage by Year
+with st.container():
+    st.header("Weather Impact on Bike Usage by Year")
+    weather_counts = filtered_day_df.groupby(['weather_type', 'year']).agg({'total': 'sum'}).reset_index()
+    plt.figure(figsize=(10, 6))
+    sns.barplot(data=weather_counts, x='weather_type', y='total', hue='year', palette='viridis')
+    plt.xlabel("Weather Type")
+    plt.ylabel("Total Bike Rentals")
+    plt.title("Total Bike Rentals by Weather Type and Year")
+    plt.grid(True, axis='y', linestyle='--')
+    st.pyplot(plt)
+    plt.clf()
+
+# Display Clustering of Casual and Registered Users by Month
+with st.container():
+    st.header("Clustering of Casual and Registered Users by Month")
+
+    def casual_and_registered(df, low_threshold=(30000, 200000), medium_threshold=(50000, 300000)):
+        monthly_data = df.groupby('month').agg({'casual': 'sum', 'registered': 'sum'})
+        clusters = {}
+        low_casual, low_registered = low_threshold
+        med_casual, med_registered = medium_threshold
+
+        for month, row in monthly_data.iterrows():
+            casual = row['casual']
+            registered = row['registered']
+
+            if casual < low_casual and registered < low_registered:
+                cluster_name = 'Low Usage'
+            elif casual < med_casual and registered < med_registered:
+                cluster_name = 'Medium Usage'
+            else:
+                cluster_name = 'High Usage'
+
+            if cluster_name not in clusters:
+                clusters[cluster_name] = []
+            clusters[cluster_name].append((casual, registered, month))
+
+        plt.figure(figsize=(10, 6))
+        for cluster_name, dots in clusters.items():
+            x_values = [point[0] for point in dots]
+            y_values = [point[1] for point in dots]
+            month_labels = [point[2] for point in dots]
+            plt.scatter(x_values, y_values, label=cluster_name)
+            for j, month in enumerate(month_labels):
+                plt.text(x_values[j], y_values[j], month, fontsize=8, ha='right', va='bottom')
+
+        plt.xlabel('Total Casual Users')
+        plt.ylabel('Total Registered Users')
+        plt.title('Clustering of Casual and Registered Users by Month')
+        plt.legend()
+        plt.grid(True)
+        st.pyplot(plt)
+        plt.clf()
+
+    casual_and_registered(filtered_hour_df)
