@@ -68,16 +68,16 @@ hour_df['weather_type'] = hour_df['weather_type'].replace({
 st.sidebar.header("Filter Data")
 
 years = sorted(day_df['year'].unique())
-selected_years = st.sidebar.multiselect("Select Year(s)", years, default=years)
+selected_years = st.sidebar.multiselect("Select Year (0=2011, 1=2012)", years, default=years)
 
 seasons = sorted(day_df['season'].unique())
-selected_seasons = st.sidebar.multiselect("Select Season(s)", seasons, default=seasons)
+selected_seasons = st.sidebar.multiselect("Select Season", seasons, default=seasons)
 
 day_types = sorted(day_df['day_type'].unique())
-selected_day_types = st.sidebar.multiselect("Select Day Type(s)", day_types, default=day_types)
+selected_day_types = st.sidebar.multiselect("Select Day Type", day_types, default=day_types)
 
 weather_types = sorted(day_df['weather_type'].unique())
-selected_weather_types = st.sidebar.multiselect("Select Weather Type(s)", weather_types, default=weather_types)
+selected_weather_types = st.sidebar.multiselect("Select Weather Type", weather_types, default=weather_types)
 
 # Filter dataframes based on selections
 filtered_day_df = day_df[
