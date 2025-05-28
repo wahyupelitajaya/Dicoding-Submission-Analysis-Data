@@ -35,7 +35,7 @@ streamlit run dashboard.py
 
 ## Link Dashboard
 ```
-(https://submission-wahyupelj.streamlit.app/)
+https://submission-wahyupelj.streamlit.app/
 ```
 
 ## Kontak
